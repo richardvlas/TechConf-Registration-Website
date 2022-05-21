@@ -23,7 +23,7 @@ You will need to install the following locally:
 
 - [Postgres](https://www.postgresql.org/download/)
 - [Visual Studio Code](https://code.visualstudio.com/download)
-- [Azure Function tools V3](Azure Function tools V3)
+- [Azure Function tools V3](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash#install-the-azure-functions-core-tools)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [Azure Tools for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-node-azure-pack)
 
