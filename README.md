@@ -31,3 +31,19 @@ You will need to install the following locally:
 
 ### Part 1: Create Azure Resources and Deploy Web App
 
+1. Create a **Resource group**
+2. Create an **Azure Postgres Database** single server
+    - Add a new database `techconfdb`
+    - Allow all IPs to connect to database server
+    - Restore the database with the backup located in the [data](data) folder
+3. Create a **Service Bus** resource with a `notificationqueue` that will be used to communicate between the web and the function
+    - Open the [web](web) folder and update the following in the `config.py` file
+        - `POSTGRES_URL`
+        - `POSTGRES_USER`
+        - `POSTGRES_PW`
+        - `POSTGRES_DB`
+        - `SERVICE_BUS_CONNECTION_STRING`
+4. Create App Service plan
+5. Create a storage account
+6. Deploy the web app
+
