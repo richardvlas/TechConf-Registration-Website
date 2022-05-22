@@ -31,48 +31,119 @@ You will need to install the following locally:
 
 ### Part 1: Create Azure Resources and Deploy Web App
 
-1. Create a **Resource group**
-2. Create an **Azure Postgres Database** flexible server
-    - Allow all IPs to connect to database server
-    - Add a new database `techconfdb`
-        - First connect locally to your server. You can use `psql` or pgAdmin, which are popular PostgreSQL clients. For this project, we'll connect by using `psql` in our local bash shell. Run the following command in your terminal:
-            ```bash
-            psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
-            ```
-        - List all databases created by default by typing `\l`
-        - In the same terminal, create a new database called techconfdb:
-            ```bash
-            CREATE DATABASE techconfdb;
-            ```
-    - To migrate the local database to Azure, restore the database with the backup located in the [data](data) folder:
-        ```bash
-        PGPASSWORD=$adminPassword psql --file=data/techconfdb_backup.sql --host=$postgresqlServer.postgres.database.azure.com --port=5432 --dbname=techconfdb --username=$adminLogin
-        ```
-        - Validate that the database was migrated by typing the following:
-            ```bash
-            psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
-            \c techconfdb
-            \dt
-            SELECT * FROM attendee;
-            SELECT * FROM conference;
-            SELECT * FROM notification;
-            ```
-            You should see the database populated with data in each table. For example this shows the conference table with all data:
-            ```bash
-            techconfdb=> SELECT * FROM conference;
-             id |   name   | active |    date    | price |             address              
-            ----+----------+--------+------------+-------+----------------------------------
-              1 | TechConf | 1      | 2022-06-10 |   495 | 123 Main St, Baltimore, MD 12345
-              2 | TestConf | 0      | 1999-01-01 |     1 | 9
-            ```
-3. Create a **Service Bus** resource with a `notificationqueue` that will be used to communicate between the web and the function
-    - Open the [web](web) folder and update the following in the `config.py` file
-        - `POSTGRES_URL`
-        - `POSTGRES_USER`
-        - `POSTGRES_PW`
-        - `POSTGRES_DB`
-        - `SERVICE_BUS_CONNECTION_STRING`
-4. Create App Service plan
-5. Create a storage account
-6. Deploy the web app
+I have written all commands to create Azure resources (as described in the below) into a bash file that you can run from the root of the project as follows:
+```bash
+source azure_resources.sh
+```
+#### Create a Resource group
+Create a Resource group by running the following command:
+```bash
+az group create --name $resourceGroup --location $location
+```
+
+#### Create an Azure Postgres Database flexible server
+Run the following command to create a PostgreSQL flexible server in the resource group:
+```bash
+az postgres flexible-server create \
+    --name $postgresqlServer \
+    --resource-group $resourceGroup \
+    --location "$location" \
+    --admin-user $adminLogin \
+    --admin-password $adminPassword \
+    --tier Burstable \
+    --sku-name $sku \
+    --storage-size 32 \
+    --version 12```
+```
+
+Allow all IPs to connect to database server by configuring a firewall rule for the server: 
+```bash
+az postgres flexible-server firewall-rule create \
+    --resource-group $resourceGroup \
+    --name $postgresqlServer \
+    --rule-name AllowAllIps \
+    --start-ip-address $startIp \
+    --end-ip-address $endIp
+```
+
+Add a new database `techconfdb`
+
+First connect locally to your server. You can use `psql` or pgAdmin, which are popular PostgreSQL clients. For this project, we'll connect by using `psql` in our local bash shell. Run the following command in your terminal:
+```bash
+psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
+```
+
+List all databases created by default by typing `\l`
+
+In the same terminal, create a new database called techconfdb:
+```bash
+CREATE DATABASE techconfdb;
+```
+
+To migrate the local database to Azure, restore the database with the backup located in the [data](data) folder:
+```bash
+PGPASSWORD=$adminPassword psql --file=data/techconfdb_backup.sql --host=$postgresqlServer.postgres.database.azure.com --port=5432 --dbname=techconfdb --username=$adminLogin
+```
+
+Validate that the database was migrated by typing the following:
+```bash
+psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
+\c techconfdb
+\dt
+SELECT * FROM attendee;
+SELECT * FROM conference;
+SELECT * FROM notification;
+```
+
+You should see the database populated with data in each table. For example this shows the conference table with all data:
+```bash
+techconfdb=> SELECT * FROM conference;
+ id |   name   | active |    date    | price |             address              
+----+----------+--------+------------+-------+----------------------------------
+  1 | TechConf | 1      | 2022-06-10 |   495 | 123 Main St, Baltimore, MD 12345
+  2 | TestConf | 0      | 1999-01-01 |     1 | 9
+```
+
+#### Create a **Service Bus** resource 
+Create a **Service Bus** resource with a `notificationqueue` that will be used to communicate between the web and the function
+
+Run the following command in your terminal to create Service Bus namespace:
+```bash
+az servicebus namespace create \
+    --name $serviceBusNamespace \
+    --resource-group $resourceGroup \
+    --location $location \
+    --sku Basic
+```
+
+Run the following command to create a queue in the Service Bus namespace:
+```bash
+az servicebus queue create \
+    --name $serviceBusQueue \
+    --namespace-name $serviceBusNamespace \
+    --resource-group $resourceGroup
+```
+
+We will use the connection string of the Service Bus Namespace to connect to the queue and send / receive messages. Run the following command to list the primary connection string:
+```bash
+az servicebus namespace authorization-rule keys list \
+    --name RootManageSharedAccessKey \
+    --namespace-name $serviceBusNamespace \
+    --resource-group $resourceGroup \
+    --query primaryConnectionString\
+    --output table
+```
+
+Open the [web](web) folder and update the following in the `config.py` file
+- `POSTGRES_URL`
+- `POSTGRES_USER`
+- `POSTGRES_PW`
+- `POSTGRES_DB`
+- `SERVICE_BUS_CONNECTION_STRING`
+
+#### Create App Service plan
+
+#### Create a storage account
+
+#### Deploy the web app
 
