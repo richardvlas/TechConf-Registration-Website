@@ -35,7 +35,36 @@ You will need to install the following locally:
 2. Create an **Azure Postgres Database** flexible server
     - Allow all IPs to connect to database server
     - Add a new database `techconfdb`
-    - Restore the database with the backup located in the [data](data) folder
+        - First connect locally to your server. You can use `psql` or pgAdmin, which are popular PostgreSQL clients. For this project, we'll connect by using `psql` in our local bash shell. Run the following command in your terminal:
+            ```bash
+            psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
+            ```
+        - List all databases created by default by typing `\l`
+        - In the same terminal, create a new database called techconfdb:
+            ```bash
+            CREATE DATABASE techconfdb;
+            ```
+    - To migrate the local database to Azure, restore the database with the backup located in the [data](data) folder:
+        ```bash
+        PGPASSWORD=$adminPassword psql --file=data/techconfdb_backup.sql --host=$postgresqlServer.postgres.database.azure.com --port=5432 --dbname=techconfdb --username=$adminLogin
+        ```
+        - Validate that the database was migrated by typing the following:
+            ```bash
+            psql "host=$postgresqlServer.postgres.database.azure.com port=5432 dbname=postgres user=$adminLogin password=$adminPassword sslmode=require"
+            \c techconfdb
+            \dt
+            SELECT * FROM attendee;
+            SELECT * FROM conference;
+            SELECT * FROM notification;
+            ```
+            You should see the database populated with data in each table. For example this shows the conference table with all data:
+            ```bash
+            techconfdb=> SELECT * FROM conference;
+             id |   name   | active |    date    | price |             address              
+            ----+----------+--------+------------+-------+----------------------------------
+              1 | TechConf | 1      | 2022-06-10 |   495 | 123 Main St, Baltimore, MD 12345
+              2 | TestConf | 0      | 1999-01-01 |     1 | 9
+            ```
 3. Create a **Service Bus** resource with a `notificationqueue` that will be used to communicate between the web and the function
     - Open the [web](web) folder and update the following in the `config.py` file
         - `POSTGRES_URL`
