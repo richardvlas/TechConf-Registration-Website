@@ -142,9 +142,15 @@ Open the [web](web) folder and update the following in the `config.py` file
 - `POSTGRES_DB`
 - `SERVICE_BUS_CONNECTION_STRING`
 
-#### Create App Service plan
-
 #### Create a storage account
+```bash
+az storage account create \
+    --name $storageAccount \
+    --resource-group $resourceGroup \
+    --location $location
+```
+
+#### Create App Service plan
 
 #### Deploy the web app
 
