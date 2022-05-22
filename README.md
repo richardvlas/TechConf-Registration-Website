@@ -134,6 +134,7 @@ az servicebus namespace authorization-rule keys list \
     --output table
 ```
 
+#### Update Configuration file
 Open the [web](web) folder and update the following in the `config.py` file
 - `POSTGRES_URL`
 - `POSTGRES_USER`
@@ -147,3 +148,5 @@ Open the [web](web) folder and update the following in the `config.py` file
 
 #### Deploy the web app
 
+
+### Part 2: Create and Publish an Azure Function
