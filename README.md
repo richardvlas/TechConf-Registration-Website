@@ -174,8 +174,17 @@ export FLASK_APP=application.py
 
 Run the webapp locally:
 ```bash
-flask application.py
+flask run
 ```
+
+Open the app in a browser using the URL http://127.0.0.1:5000/. You should see the app running.
+
+Stop the Flask server by pressing **Ctrl+C** in the terminal.
+
+
+
+
+
 
 
 
