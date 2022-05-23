@@ -181,16 +181,16 @@ Open the app in a browser using the URL http://127.0.0.1:5000/. You should see t
 
 Stop the Flask server by pressing **Ctrl+C** in the terminal.
 
+#### Create App Service plan and Deploy the web app
 
-
-
-
-
-
-
-#### Create App Service plan
-
-#### Deploy the web app
-
+From within the [web](web) folder run the following command to create App Service and deploy the flask web app to Azure:
+```bash
+az webapp up \
+    --resource-group $resourceGroup \
+    --name $webAppName \
+    --plan $appServicePlanName \
+    --sku F1 \
+    --verbose
+```
 
 ### Part 2: Create and Publish an Azure Function
