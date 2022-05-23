@@ -194,3 +194,36 @@ az webapp up \
 ```
 
 ### Part 2: Create and Publish an Azure Function
+#### Create Azure Function
+In the terminal window change to [function](function) directory and run the following command to create the Azure Function project:
+```bash
+func init --worker-runtime python
+```
+
+Create an Azure Function in the [function](function) directory that is triggered by a template - `service bus queue` created in Part 1.
+```bash
+func new \
+    --name ServiceBusQueueTrigger \
+    --template "Azure Service Bus Queue trigger"
+```
+
+The Azure Function does the following:
+- Process the message which is the `notification_id`
+- Query the database using `psycopg2` library for the given notification to retrieve the subject and message
+- Query the database to retrieve a list of attendees (**email** and **first name**)
+- Loop through each attendee and send a personalized subject message
+- After the notification, update the notification status with the total number of attendees notified
+
+#### Publish the Azure Function
+
+TODO
+
+
+
+
+
+
+
+
+
+
