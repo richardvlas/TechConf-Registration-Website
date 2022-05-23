@@ -150,6 +150,35 @@ az storage account create \
     --location $location
 ```
 
+#### Run web app locally
+Test that the web app runs localy before deploying to Azure App Service:
+
+Change into the [web](web) directory
+```bash
+cd web
+```
+
+Install the app's dependencies:
+```bash
+# install dependencies
+pipenv install
+
+# go into the shell
+pipenv shell
+```
+
+Set a FLASK_APP environment variable tells Flask where to find the app object:
+```bash
+export FLASK_APP=application.py
+```
+
+Run the webapp locally:
+```bash
+flask application.py
+```
+
+
+
 #### Create App Service plan
 
 #### Deploy the web app
