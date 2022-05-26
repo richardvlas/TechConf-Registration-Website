@@ -264,7 +264,19 @@ Note the function app URL to use it in the frontend application. The URL looks f
 https://function-app-517349048.azurewebsites.net
 ```
 
+### Part 3: Refactor routes.py
 
+Refactor the post logic in `web/app/routes.py -> notification()` using servicebus `queue_client`
+
+The notification method on POST should save the notification object and queue the notification id for the function to pick it up
+
+Then re-deploy the web app to publish changes to Azure:
+
+```bash
+az webapp up \
+    --name $webAppName \
+    --verbose
+```
 
 
 
