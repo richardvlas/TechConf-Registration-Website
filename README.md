@@ -216,7 +216,50 @@ The Azure Function does the following:
 
 #### Publish the Azure Function
 
-TODO
+Create a function app on Azure with given unique name within the resource group:
+
+```bash
+az functionapp create \
+    --name $functionAppName \
+    --resource-group $resourceGroup \
+    --storage-account $storageAccount \
+    --os-type Linux \
+    --runtime python \
+    --runtime-version 3.8 \
+    --consumption-plan-location $location
+```    
+
+Ensure that the following app settings are added in the Applications Settings under `Settings` -> `Configuration`:
+
+- `POSTGRES_URL`
+- `POSTGRES_USER`
+- `POSTGRES_PW`
+- `POSTGRES_DB`
+- `SERVICE_BUS_CONNECTION_STRING`
+- `ADMIN_EMAIL_ADDRESS`
+- `SENDGRID_API_KEY`
+
+Test the function locally by first installing the function's dependencies and activating the new environment:
+
+```bash
+# install dependencies
+pipenv install
+
+# go into the shell
+pipenv shell
+```
+
+Run the function locally
+```bash
+func start
+```
+
+
+
+
+
+
+
 
 
 
