@@ -223,6 +223,7 @@ az functionapp create \
     --name $functionAppName \
     --resource-group $resourceGroup \
     --storage-account $storageAccount \
+    --functions-version 3 \
     --os-type Linux \
     --runtime python \
     --runtime-version 3.8 \
