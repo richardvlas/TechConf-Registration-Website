@@ -223,22 +223,12 @@ az functionapp create \
     --name $functionAppName \
     --resource-group $resourceGroup \
     --storage-account $storageAccount \
-    --functions-version 3 \
+    --functions-version 4 \
     --os-type Linux \
     --runtime python \
     --runtime-version 3.8 \
     --consumption-plan-location $location
 ```    
-
-Ensure that the following app settings are added in the Applications Settings under `Settings` -> `Configuration`:
-
-- `POSTGRES_URL`
-- `POSTGRES_USER`
-- `POSTGRES_PW`
-- `POSTGRES_DB`
-- `SERVICE_BUS_CONNECTION_STRING`
-- `ADMIN_EMAIL_ADDRESS`
-- `SENDGRID_API_KEY`
 
 Test the function locally by first installing the function's dependencies and activating the new environment:
 
@@ -255,6 +245,24 @@ Run the function locally
 func start
 ```
 
+Deploy the local Functions project to the function app resource we just created in Azure. This is best acomplished through Azure extensions in VS Code. When prompted to upload the setting from `local.settings.json` confirm to automatically process it.
+
+This ensures that the following app settings are added on Azure in the Function's app Applications Settings found under `Settings` -> `Configuration`:
+
+- `POSTGRES_URL`
+- `POSTGRES_USER`
+- `POSTGRES_PW`
+- `POSTGRES_DB`
+- `SERVICE_BUS_CONNECTION_STRING`
+- `ADMIN_EMAIL_ADDRESS`
+- `SENDGRID_API_KEY`
+
+
+Note the function app URL to use it in the frontend application. The URL looks for example like the following one:
+
+```
+https://function-app-517349048.azurewebsites.net
+```
 
 
 
