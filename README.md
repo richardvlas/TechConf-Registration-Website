@@ -341,6 +341,16 @@ Screenshot of the **Email Notifications List** showing the notification status a
 
 ![email_notification_list_notified_attendees](screenshots/email_notification_list_notified_attendees.png)
 
+### Clean up resources
+If you don't plan to use any of the resources that you created, delete them so you don't incur any charges:
+
+```bash
+az group delete --name $resourceGroup
+```
+
+
+
+
 
 
 
