@@ -285,12 +285,20 @@ A complete month cost analysis of each Azure resource is shown below to give an 
 | ------------ | ------------ | ------------ |
 | *Azure Postgres Database* | Burstable, Standard_B1ms, 32 GiB | $19.01 |
 | *Azure Service Bus*   | Basic | $0.05 |
-| Azure App Service Plan | F1: Free | $0.0 |
-| Azure Function App | 2mil executions (2000ms/execution) | $1.80 |
-| Azure Storage Account | StorageV2 (general purpose v2) | $51.41 |
+| *Azure App Service Plan* | F1: Free | $0.0 |
+| *Azure Function App* | 2mil executions (2000ms/execution) | $1.80 |
+| *Azure Storage Account* | StorageV2 (general purpose v2) | $51.41 |
+| **Total Cost** |  | $72.27 |
 
 ## Architecture Explanation
 
+This section provides an explanation and reasoning for the architecture selection of both the Azure Web App and Azure Function. Spliting the application into Web App and Azure Function ensures modularity and has the advantage of scalability when the load is at peak. of front end user interface and background jobs including all logic behing the UI.
+
+To allow attendees to register for an upcoming conference as well as administrators to view the list of attendees and notify all attendees via a personalized email message, the TechConf website the was migrated to Azure, in order to resolve the following pain points:
+    
+- Scalability: The web application was deployed to Azure App Service Plan that allows to scale the application to handle user load at peak
+- Peformance: Using Service Bus and Queues with Azure Functions as the main orchestrators of the background jobs, ensures that when the admin sends out notifications, these are queued in a Azure Service Bus Queue and an Azure function is triggered when a new queue message is received, which gets rid of HTTP timeout exceptions at peak load and therefore ensures high performance of the application.
+- Cost: The new cloud architecture of the migrated application ensures cost-effectivness as well, since the services scaled so that when the application received low traffic, the cost going to be lower than at high volume of traffic.
 
 
 
