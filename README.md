@@ -29,7 +29,7 @@ You will need to install the following locally:
 
 ## Project Instructions
 
-### Part 1: Create Azure Resources and Deploy Web App
+### Create Azure Resources and Deploy Web App
 
 I have written all commands to create Azure resources (as described in the below) into a bash file that you can run from the root of the project as follows:
 ```bash
@@ -193,7 +193,7 @@ az webapp up \
     --verbose
 ```
 
-### Part 2: Create and Publish an Azure Function
+### Create and Publish an Azure Function
 #### Create Azure Function
 In the terminal window change to [function](function) directory and run the following command to create the Azure Function project:
 ```bash
@@ -264,7 +264,7 @@ Note the function app URL to use it in the frontend application. The URL looks f
 https://function-app-517349048.azurewebsites.net
 ```
 
-### Part 3: Refactor routes.py
+### Refactor routes.py
 
 Refactor the post logic in `web/app/routes.py -> notification()` using servicebus `queue_client`
 
@@ -278,7 +278,7 @@ az webapp up \
     --verbose
 ```
 
-## Monthly Cost Analysis
+### Monthly Cost Analysis
 A complete month cost analysis of each Azure resource is shown below to give an estimate of total cost using for the given application:
 
 | Azure Resource | Service Tier | Monthly Cost |
@@ -290,7 +290,7 @@ A complete month cost analysis of each Azure resource is shown below to give an 
 | *Azure Storage Account* | StorageV2 (general purpose v2) | $51.41 |
 | **Total Cost** |  | $72.27 |
 
-## Architecture Explanation
+### Architecture Explanation
 
 This section provides an explanation and reasoning for the architecture selection of both the Azure Web App and Azure Function. Spliting the application into Web App and Azure Function ensures modularity and has the advantage of scalability when the load is at peak. of front end user interface and background jobs including all logic behing the UI.
 
@@ -299,6 +299,50 @@ To allow attendees to register for an upcoming conference as well as administrat
 - Scalability: The web application was deployed to Azure App Service Plan that allows to scale the application to handle user load at peak
 - Peformance: Using Service Bus and Queues with Azure Functions as the main orchestrators of the background jobs, ensures that when the admin sends out notifications, these are queued in a Azure Service Bus Queue and an Azure function is triggered when a new queue message is received, which gets rid of HTTP timeout exceptions at peak load and therefore ensures high performance of the application.
 - Cost: The new cloud architecture of the migrated application ensures cost-effectivness as well, since the services scaled so that when the application received low traffic, the cost going to be lower than at high volume of traffic.
+
+### Screenshots
+
+#### Migrate Web Applications
+Screenshot of Azure Resource showing the **App Service Plan**.
+
+![app_service_plan](screenshots/app_service_plan.png)
+
+Screenshot of the deployed Web App, showing the URL and application running.
+
+![web_app_running](screenshots/web_app_running.png)
+
+
+#### Migrate Database
+Screenshot of the Azure Resource showing the **Azure Database for PostgreSQL server**.
+
+![azure_database_postgresql_server](screenshots/azure_database_postgresql_server.png)
+
+Screenshot of the Web App successfully loading the list of **attendees** and **notifications** from the deployed website.
+
+![list_of_attendees](screenshots/list_of_attendees.png)
+
+![list_of_notifications](screenshots/list_of_notifications.png)
+
+
+#### Migrate Background Process
+Screenshot of the Azure Function App running in Azure, showing the **function name** and the **function app plan**.
+
+![azure_function_app_running](screenshots/azure_function_app_running.png)
+
+Screenshot of filled out **Send Notification** form, when submitting a new notification.
+
+![send_notification_filled](screenshots/send_notification_filled.png)
+
+Screenshot of the **Email Notifications List** showing the notification status as **Notifications submitted** (Notification processed after executing the Azure function)
+
+![email_notification_list_notification_submitted](screenshots/email_notification_list_notification_submitted.png)
+
+Screenshot of the **Email Notifications List** showing the notification status as **Notified X attendees** (Notification processed after executing the Azure function)
+
+![email_notification_list_notified_attendees](screenshots/email_notification_list_notified_attendees.png)
+
+
+
 
 
 
