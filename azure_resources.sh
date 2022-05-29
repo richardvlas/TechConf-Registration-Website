@@ -14,6 +14,19 @@ adminPassword="<enter-your-admin-password-here>"
 # to the PostgreSQL server -> Here we allow all IPs to connect to database server
 startIp=0.0.0.0
 endIp=255.255.255.255
+# Service Bus namespace
+serviceBusNamespace="techconf-service-bus-namespace"
+# Service Bus Queue name
+serviceBusQueue="notificationqueue"
+# Storage account unique name
+storageAccount="storageaccount$randomIdentifier"
+# App Service Plan name
+appServicePlanName="appserviceplan$randomIdentifier"
+# Web App name
+webAppName="registration-app-$randomIdentifier"
+# Function App name
+functionAppName="function-app-$randomIdentifier"
+
 
 # Create a resource group
 echo "Creating resource group $resourceGroup in $location..."
@@ -50,7 +63,70 @@ az postgres flexible-server firewall-rule list \
 
 # Get the connection information to connect to your server (it provides host 
 # information and access credentials
-echo "Postgres server connection information:"
+echo "Postgres server connection information..."
 az postgres server show \
     --resource-group $resourceGroup \
     --name $postgresqlServer
+
+# Create a Service Bus Namespace
+echo "Creating a Service Bus Namespace..."
+az servicebus namespace create \
+    --name $serviceBusNamespace \
+    --resource-group $resourceGroup \
+    --location $location \
+    --sku Basic
+
+# Create a Service Bus Queue in the Service Bus Namespace
+echo "Creating a Service Bus Queue in the Service Bus Namespace..."
+az servicebus queue create \
+    --name $serviceBusQueue \
+    --namespace-name $serviceBusNamespace \
+    --resource-group $resourceGroup
+
+# List the primary connection string for the Service Bus Namespace
+echo "List the primary connection string for the Service Bus Namespace:"
+
+az servicebus namespace authorization-rule keys list \
+    --name RootManageSharedAccessKey \
+    --namespace-name $serviceBusNamespace \
+    --resource-group $resourceGroup \
+    --query primaryConnectionString \
+    --output table
+
+# Create a storage account
+echo "Creating a storage account..."
+az storage account create \
+    --name $storageAccount \
+    --resource-group $resourceGroup \
+    --location $location
+
+# Create App Service plan and deploy the webapp 
+az webapp up \
+    --resource-group $resourceGroup \
+    --name $webAppName \
+    --plan $appServicePlanName \
+    --sku F1 \
+    --verbose
+
+
+# Creates a new Functions project in a specific language.
+func init --worker-runtime python
+
+# Create an Azure Function in the function folder that is triggered by the service bus queue 
+func new \
+    --name ServiceBusQueueTrigger \
+    --template "Azure Service Bus Queue trigger"
+
+# Create a function app on Azure
+az functionapp create \
+    --name $functionAppName \
+    --resource-group $resourceGroup \
+    --storage-account $storageAccount \
+    --functions-version 4 \
+    --os-type Linux \
+    --runtime python \
+    --runtime-version 3.8 \
+    --consumption-plan-location $location
+
+# Deploy a Functions project to an existing function app resource in Azure
+func azure functionapp publish $functionAppName --publish-local-settings -i
