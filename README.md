@@ -278,6 +278,19 @@ az webapp up \
     --verbose
 ```
 
+## Monthly Cost Analysis
+A complete month cost analysis of each Azure resource is shown below to give an estimate of total cost using for the given application:
+
+| Azure Resource | Service Tier | Monthly Cost |
+| ------------ | ------------ | ------------ |
+| *Azure Postgres Database* | Burstable, Standard_B1ms, 32 GiB | $19.01 |
+| *Azure Service Bus*   | Basic | $0.05 |
+| Azure App Service Plan | F1: Free | $0.0 |
+| Azure Function App | 2mil executions (2000ms/execution) | $1.80 |
+| Azure Storage Account | StorageV2 (general purpose v2) | $51.41 |
+
+## Architecture Explanation
+
 
 
 
